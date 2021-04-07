@@ -2,6 +2,8 @@ import math
 from datetime import date, timedelta, datetime, time, tzinfo
 import datetime as datetime
 import numpy as np
+import constant
+
 
 year = int(input("year: "))
 
@@ -66,17 +68,16 @@ length_of_the_day = daylength(dn, latitude)
 print("nappal hossza: " + str(int(length_of_the_day)) + "h")
 
 zenith_angle = -math.acos(math.sin(latitude)*math.sin(declation)+math.cos(latitude)*math.cos(declation)*math.cos(length_of_the_day))+2*math.pi
-print("zenit szög: " + str(zenith_angle))
-print("Napmagasság szöge: " + str(90 - zenith_angle))
+print("zenit szög: " + str(round(zenith_angle, 2)))
+print("Napmagasság szöge: " + str(round(90 - zenith_angle, 2)))
 
 magyarorszag = math.degrees(math.tanh(19 / 47))
 magyarorszag_beta_point = 180 - (22 + 90)
 alpha_angle = math.degrees(math.tanh(longitude / latitude))
 alpha_angle = Format(alpha_angle)
 beta_point = 180 - (alpha_angle + 90)
-print(beta_point)
 final_point = int(magyarorszag_beta_point - beta_point)
-print("Az asztalt " + str(final_point) + " fokkal kell eltolni")
+#print("Az asztalt " + str(final_point) + " fokkal kell eltolni")
 #**************–**************************************************************************
 
 
@@ -145,9 +146,49 @@ if minute_value < 0:
 if today2.month >= 2 and today2.day >= 28 and today2.month <= 10 and today2.day <= 31:
     hour_value += 1
 
+move_desk = 0
+optimised_value = 0
+def move(self):
+
+    if self > 0:
+        move_desk = self * -1
+        print("Az asztalt " + str(round(move_desk, 2)) + " fokkal elkell tolni balra!")
+    elif self == 0:
+        print("Az asztalt nem kell eltolni")
+    else:
+        move_desk = self * -1
+        print("Az asztalt " + str(round(move_desk, 2)) + " fokkal elkell tolni jobbra")
+
+
+    solar_dist = constant.SOUTH - declation
+    if solar_dist < constant.SOUTH and solar_dist > constant.EAST:
+        optimised_value = 90
+        print("A telepített napcellák délkeleten helyezkednek el hatékonyság: " + str(optimised_value) + "%")
+        print("Szöge: " + str(round(solar_dist, 2)))
+
+    elif solar_dist < constant.EAST and solar_dist > constant.NORTH:
+        optimised_value = 75
+        print("A telepített napcellák északkeleten helyezkednek el hatékonyság: " + str(optimised_value) + "%")
+        print("Szöge: " + str(round(solar_dist, 2)))
+
+    elif solar_dist > constant.SOUTH and solar_dist < constant.WEST:
+        optimised_value = 90
+        print("A telepített napcellák délnyugaton helyezkednek el hatékonyság: " + str(optimised_value) + "%")
+        print("Szöge: " + str(round(solar_dist, 2)))
+
+    else:
+        optimised_value = 75
+        print("A telepített napcellák északnyugaton helyezkednek el hatékonyság: " + str(optimised_value) + "%")
+        print("Szöge: " + str(round(solar_dist, 2)))
+
+
+
+
+
 
 print("napfelkelte: " + str(hour_value) + ":" + str(abs(minute_value)))
 print("naplemente: " + str(set.hour-1) + ":" + str(set.minute))
+move(declation)
 
 
 
